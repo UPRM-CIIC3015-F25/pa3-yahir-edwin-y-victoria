@@ -147,8 +147,8 @@ class DeckManager:
         cardImages = self.load_card_images(subLevel)
         deck = []
 
-        suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
-        ranks = ["A", "K", "Q", "J", "10", "9", "8", "7", "6", "5", "4", "3", "2"]
+        suits = [Suit.HEARTS, Suit.DIAMONDS, Suit.CLUBS, Suit.SPADES]
+        ranks = [Rank.ACE, Rank.KING, Rank.QUEEN, Rank.JACK, Rank.TEN, Rank.NINE, Rank.EIGHT, Rank.SEVEN, Rank.SIX, Rank.FIVE, Rank.FOUR, Rank.THREE, Rank.TWO]
 
         for suit in suits:
             for rank in ranks:

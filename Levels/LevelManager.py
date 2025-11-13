@@ -20,12 +20,14 @@ class LevelManager():
     #   Each level should include a Small, Big, and Boss Blind, with Boss Blinds assigned unique names.
     #   Organize them in a dictionary structure where each key represents a level number.
     def setUpLevels(self): # Sets up all levels and sublevels
-        self.levelsDict[1] = [SubLevel(Blind.SMALL, 1), SubLevel(Blind.BIG, 1), SubLevel(Blind.BOSS, 1, "The Water")]
-        self.levelsDict[2] = [SubLevel(Blind.SMALL, 2), SubLevel(Blind.BIG, 2), SubLevel(Blind.BOSS, 2, "The Mark")]
-        self.levelsDict[3] = [SubLevel(Blind.SMALL, 3), SubLevel(Blind.BIG, 3), SubLevel(Blind.BOSS, 3, "The House")]
-        self.levelsDict[4] = [SubLevel(Blind.SMALL, 4), SubLevel(Blind.BIG, 4), SubLevel(Blind.BOSS, 4, "The Hook")]
-        self.levelsDict[5] = [SubLevel(Blind.SMALL, 5), SubLevel(Blind.BIG, 5), SubLevel(Blind.BOSS, 5, "The Manacle")]
-        self.levelsDict[6] = [SubLevel(Blind.SMALL, 6), SubLevel(Blind.BIG, 6), SubLevel(Blind.BOSS, 6, "The Needle")]
+            self.levelsDict = {
+                1: [SubLevel(Blind.SMALL, 1), SubLevel(Blind.BIG, 1), SubLevel(Blind.BOSS, 1, "The Water")],
+                2: [SubLevel(Blind.SMALL, 2), SubLevel(Blind.BIG, 2), SubLevel(Blind.BOSS, 2, "The Mark")],
+                3: [SubLevel(Blind.SMALL, 3), SubLevel(Blind.BIG, 3), SubLevel(Blind.BOSS, 3, "The House")],
+                4: [SubLevel(Blind.SMALL, 4), SubLevel(Blind.BIG, 4), SubLevel(Blind.BOSS, 4, "The Hook")],
+                5: [SubLevel(Blind.SMALL, 5), SubLevel(Blind.BIG, 5), SubLevel(Blind.BOSS, 5, "The Manacle")],
+                6: [SubLevel(Blind.SMALL, 6), SubLevel(Blind.BIG, 6), SubLevel(Blind.BOSS, 6, "The Needle")]
+            }
 
     def updateLevels(self):
         # Load sublevels list for the player's current ante

@@ -1,4 +1,4 @@
-import pygame
+
 import random
 from Cards.Card import Suit, Rank, Card
 from Cards.Jokers import Jokers
@@ -167,6 +167,16 @@ class DeckManager:
         deckJokers = []
 
         priceMap = {
+            "The Joker": 4,
+            "Michael Myers": 6,
+            "Fibonacci": 5,
+            "Gauntlet": 5,
+            "Ogre": 5,
+            "Straw Hat": 5,
+            "Hog Rider": 4,
+            "? Block": 5,
+            "Hogwarts": 6,
+            "802": 6
         }
 
         for name, image in jokerImages.items():
@@ -179,27 +189,3 @@ class DeckManager:
             deckJokers.append(joker)
 
         return deckJokers
-
-    # ---------- Utilities ----------
-    def shuffleDeck(self, deck): # Shuffles any given deck of card or joker objects
-        random.shuffle(deck)
-        return deck
-
-    def dealCards(self, deck, numCards, subLevel: SubLevel = None): # Deals a number of cards from the deck
-        dealtCards = []
-        bossName = getattr(subLevel, "bossLevel", None) if subLevel is not None else None
-
-        houseImage = None
-        if bossName == "The House":
-            sheet = pygame.image.load('Graphics/Cards/Poker_Sprites.png').convert_alpha()
-            houseImage = sheet.subsurface(pygame.Rect(0, 0, self.srcCardW, self.srcCardH)).copy()
-
-        take = min(numCards, len(deck))
-        for _ in range(take):
-            card = deck.pop(0)
-            if bossName == "The House":
-                card.image = houseImage
-                card.faceDown = True
-            dealtCards.append(card)
-
-        return dealtCards

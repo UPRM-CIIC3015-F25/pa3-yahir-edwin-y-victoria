@@ -31,7 +31,7 @@ class GameState(State):
         self.jokerDeck = State.deckManager.createJokerDeck()
         self.playerJokers = []
         self.jokers = {}
-        # track which jokers activated for the current played hand (used to offset their draw)
+
         self.activated_jokers = set()
         
         # for joker in self.jokerDeck:
@@ -841,4 +841,23 @@ class GameState(State):
     #   recursion finishes, reset card selections, clear any display text or tracking lists, and
     #   update the visual layout of the player's hand.
     def discardCards(self, removeFromHand: bool):
-        self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+        if not self.selected_cards:
+            if removeFromHand:
+                amount = 8 - len(self.hand)
+                if amount > 0:
+                    new_cards = self.drawCards(amount)
+                    self.hand.extend(new_cards)
+            self.selected_cards = []
+            self.selected_indexes = []
+            self.selection_text = ""
+            self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+            return
+        if removeFromHand:
+            index = self.selected_cards[0]
+            self.hand.pop(index)
+        self.selected_cards = self.selected_cards[1:]
+        self.discardCards(removeFromHand)
+
+
+
+

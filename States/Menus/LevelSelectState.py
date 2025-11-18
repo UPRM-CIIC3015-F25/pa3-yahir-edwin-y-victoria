@@ -131,6 +131,7 @@ class LevelSelectState(State):
         #   what unique restriction or ability that boss applies during the round.
         #   This dictionary will later be used to look up and apply special effects based on which boss is active.
         boss_abilities = {
+
             "The Mark": "Los jugadores solo pueden jugar cartas pares.",
             "The Needle": "Cada carta jugada pierde 1 punto de valor.",
             "The Tower": "No se pueden formar escaleras esta ronda.",

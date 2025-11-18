@@ -561,6 +561,7 @@ class GameState(State):
             return base + self.calculate_gold_reward(playerInfo, bonus_steps)
 
         if stage == 0:
+
             return 0
 
         return 1 + self.calculate_gold_reward(playerInfo, stage - 1)

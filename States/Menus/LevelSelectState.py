@@ -91,7 +91,22 @@ class LevelSelectState(State):
                 #   Finally, make sure to reset the player’s round score to 0 at the end of this setup.
                 #   Avoid unnecessary repetition—use clear condition structure to make the logic readable.
                 self.playerInfo.roundScore = 0
-                
+                boss_limits = {
+                    "The Mark": (5, 1),
+                    "The Hook": (5, 1),
+                    "The Needle": (6, 2),
+                    "The Water": (6, 2),
+                    "The Tower": (4, 0),
+                    "The House": (4, 0),
+                    "The Manacle": (5, 2),
+                    "The Club": (5, 2),
+                    "The Goad": (6, 1)
+                }
+
+                limits = boss_limits.get(self.currentBoss, (5, 1))
+                self.playerInfo.handLimit, self.playerInfo.discardLimit = limits
+                self.playerInfo.roundScore = 0
+
                 # Set target score for the new sublevel
                 self.playerInfo.score = self.playerInfo.levelManager.curSubLevel.score
                 

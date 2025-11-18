@@ -1,5 +1,5 @@
-import pygame
 import random
+import pygame
 from States.Menus.DebugState import DebugState
 from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
@@ -24,7 +24,9 @@ class GameState(State):
         super().__init__(nextState)
         # ----------------------------Deck and Hand initialization----------------------------
         self.playerInfo = player # playerInfo object
-        self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
+        self.deck = State.deckManager.shuffleDeck(
+            State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel)
+        )
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
         
@@ -33,6 +35,10 @@ class GameState(State):
         self.jokers = {}
 
         self.activated_jokers = set()
+
+
+        self.selected_cards = []
+        self.discard_pile = []
         
         # for joker in self.jokerDeck:
         #     print(joker.name)

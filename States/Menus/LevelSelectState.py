@@ -116,8 +116,18 @@ class LevelSelectState(State):
         #   what unique restriction or ability that boss applies during the round.
         #   This dictionary will later be used to look up and apply special effects based on which boss is active.
         boss_abilities = {
-
-        }
+            "The Mark": "Los jugadores solo pueden jugar cartas pares.",
+            "The Needle": "Cada carta jugada pierde 1 punto de valor.",
+            "The Tower": "No se pueden formar escaleras esta ronda.",
+            "The Eye": "Debes jugar la carta más alta de tu mano.",
+            "The Maw": "Las cartas descartadas no se pueden usar por el resto de la ronda.",
+            "The House": "Solo se puede jugar una carta de cada palo por turno.",
+            "The Hook": "Se invierte el orden de juego entre los jugadores.",
+            "The Water": "Cada carta jugada reduce el valor de la siguiente carta en 1.",
+            "The Manacle": "No se pueden usar cartas de más de 10 puntos.",
+            "The Club": "Se otorga un bonus si se juega una pareja.",
+            "The Goad": "Las cartas consecutivas del mismo palo tienen efecto doble."
+}
 
         # Dict of boss with their color schemes
         # key - boss name : str, value - (header color : tuple, background color : tuple)

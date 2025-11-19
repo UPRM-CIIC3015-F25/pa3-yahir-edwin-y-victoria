@@ -1,5 +1,5 @@
-import pygame
 import random
+import pygame
 from States.Menus.DebugState import DebugState
 from States.Core.StateClass import State
 from Cards.Card import Suit, Rank
@@ -24,7 +24,9 @@ class GameState(State):
         super().__init__(nextState)
         # ----------------------------Deck and Hand initialization----------------------------
         self.playerInfo = player # playerInfo object
-        self.deck = State.deckManager.shuffleDeck(State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel))
+        self.deck = State.deckManager.shuffleDeck(
+            State.deckManager.createDeck(self.playerInfo.levelManager.curSubLevel)
+        )
         self.hand = State.deckManager.dealCards(self.deck, 8)
         self.cards = {}
         
@@ -33,6 +35,10 @@ class GameState(State):
         self.jokers = {}
 
         self.activated_jokers = set()
+
+
+        self.selected_cards = []
+        self.discard_pile = []
         
         # for joker in self.jokerDeck:
         #     print(joker.name)
@@ -534,8 +540,30 @@ class GameState(State):
     #     - Recursive calculation of the overkill bonus (based on how much score exceeds the target)
     #     - A clear base case to stop recursion when all parts are done
     #   Avoid any for/while loops — recursion alone must handle the repetition.
+
     def calculate_gold_reward(self, playerInfo, stage=0):
+        if stage == 0:
+            if playerInfo.currentBlind == "SMALL":
+                base = 4
+            elif playerInfo.currentBlind == "BIG":
+                base = 8
+            else:
+                base = 10
+
+            overkill = playerInfo.score - playerInfo.targetScore
+            if overkill < 0:
+                overkill = 0
+
+            bonus_steps = overkill // 5
+            if bonus_steps > 5:
+                bonus_steps = 5
+
+            return base + self.calculate_gold_reward(playerInfo, bonus_steps)
+
+        if stage == 0:
             return 0
+
+        return 1 + self.calculate_gold_reward(playerInfo, stage - 1)
 
     def updateCards(self, posX, posY, cardsDict, cardsList, scale=1.5, spacing=90, baseYOffset=-20, leftShift=40):
         cardsDict.clear()

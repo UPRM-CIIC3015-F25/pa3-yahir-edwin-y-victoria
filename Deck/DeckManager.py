@@ -1,5 +1,5 @@
-
 import random
+import pygame
 from Cards.Card import Suit, Rank, Card
 from Cards.Jokers import Jokers
 from Levels.SubLevel import SubLevel
@@ -15,6 +15,20 @@ class DeckManager:
             "Fibonacci", "Michael Myers", "? Block", "Hogwarts", "StrawHat",
             "802", "Ogre", "Hog Rider", "Gauntlet", "The Joker"
         ]
+
+    def shuffleDeck(self, deck):
+        import random
+        random.shuffle(deck)
+        return deck
+    def dealCards(self, deck, numCards, subLevel: SubLevel = None):
+        dealtCards = []
+        take = min(numCards, len(deck))
+        for _ in range(take):
+            card = deck.pop(0)
+            dealtCards.append(card)
+        return dealtCards
+
+
     # ---------- Helpers ----------
     def _scaleToHeightIntegerish(self, surf: pygame.Surface, targetH: int) -> pygame.Surface:
         h = surf.get_height()

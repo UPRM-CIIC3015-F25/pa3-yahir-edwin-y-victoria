@@ -1,5 +1,7 @@
 import pygame
 from States.Core.StateClass import State
+from Deck.DeckManager import DeckManager
+
 
 
 #---------- Debug Overlay State ----------
@@ -142,3 +144,18 @@ class DebugState(State):
                 if self.game_state:
                     player = self.game_state.playerInfo
                     player.playerMoney += 1
+
+            elif events.key == pygame.K_LEFT:
+                keys = pygame.key.get_pressed()
+
+                for i in range(10):
+                    if i < 9:
+                        check_key = pygame.K_1 + i
+                    else:
+                        check_key = pygame.K_0
+
+                    if keys[check_key]:
+                        index = i
+                        joker_name = self.deckManager.jokerNames[index]
+                        if joker_name not in self.game_state.playerJokers:
+                            self.game_state.playerJokers.append(joker_name)

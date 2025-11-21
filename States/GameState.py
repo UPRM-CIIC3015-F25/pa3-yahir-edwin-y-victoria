@@ -584,25 +584,21 @@ class GameState(State):
     def SortCards(self, sort_by: str = "suit"):
         suitOrder = [Suit.HEARTS, Suit.CLUBS, Suit.DIAMONDS, Suit.SPADES]         # Define the order of suits
         self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
-
         for i in range(len(self.hand)):
             for j in range(i + 1, len(self.hand)):
                 card1 = self.hand[i]
                 card2 = self.hand[j]
                 swap = False
-
                 if sort_by == "suit":
                     if suitOrder.index(card1.suit) > suitOrder.index(card2.suit):
                         swap = True
                     elif card1.suit == card2.suit and card1.rank.value > card2.rank.value:
                         swap = True
-
                 elif sort_by == "rank":
                     if card1.rank.value > card2.rank.value:
                         swap = True
                     elif card1.rank.value == card2.rank.value and suitOrder.index(card1.suit) > suitOrder.index(card2.suit):
                         swap = True
-
                 if swap:
                     temp=self.hand[i]
                     self.hand[i]=self.hand[j]

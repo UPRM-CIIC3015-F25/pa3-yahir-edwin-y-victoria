@@ -933,10 +933,11 @@ class GameState(State):
             if card in self.hand:
                 self.hand.remove(card)
                 self.used.append(card)
-        self.discardsCards(removeFromHand)
+        self.discardCards(removeFromHand)
 
         self.selected_cards = self.selected_cards[1:]
         self.discardCards(removeFromHand)
+
 
 
 

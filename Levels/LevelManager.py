@@ -59,9 +59,9 @@ class LevelManager():
     #   It should check each sublevel in order and return the first one that isn’t finished.
     #   Stop once all have been checked or one is found. Avoid using loops. (USE RECURSIONS)
     def next_unfinished_sublevel(self, index=0):
-        if index >= len(self.sublevels):
+        if index >= len(self.curlevel):
             return None
-        if not self.sublevels[index].finished:
+        if not self.curLevel[index].finished:
             return index
         return self.next_unfinished_sublevel(index + 1)
 

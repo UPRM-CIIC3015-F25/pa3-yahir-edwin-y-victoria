@@ -600,9 +600,9 @@ class GameState(State):
                     elif card1.rank.value == card2.rank.value and suitOrder.index(card1.suit) > suitOrder.index(card2.suit):
                         swap = True
                 if swap:
-                    temp=self.hand[i]
-                    self.hand[i]=self.hand[j]
-                    self.hand[j]=temp
+                    self.hand[i], self.hand[j] = self.hand[j], self.hand[i]
+        self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
+
 
 
     def checkHoverCards(self):

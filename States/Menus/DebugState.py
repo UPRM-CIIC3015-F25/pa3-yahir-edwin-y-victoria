@@ -145,7 +145,7 @@ class DebugState(State):
                     player = self.game_state.playerInfo
                     player.playerMoney += 1
 
-            elif events.key == pygame.K_LEFT:
+            elif events.key == pygame.K_LEFT: #add joker (press left + number at the same time)
                 keys = pygame.key.get_pressed()
 
                 for i in range(10):

@@ -916,23 +916,43 @@ class GameState(State):
     #   recursion finishes, reset card selections, clear any display text or tracking lists, and
     #   update the visual layout of the player's hand.
     def discardCards(self, removeFromHand: bool):
-        if not self.cardsSelectedList:
-            missing = 8 - len(self.hand)
-            if missing > 0:
-                self.hand.extend(State.deckManager.dealCards(self.deck, missing))
-            for c in self.hand:
-                c.isSelected = False
-            self.cardsSelectedList.clear()
-            self.cardsSelectedRect.clear()
-            self.hand.sort(key=lambda card: card.rank, reverse=True)
+        if len(self.cardsSelectedList) > 0:
+            sel_list = self.cardsSelectedList
+        else:
+            sel_list = self.selected_cards
+
+        if len(sel_list) == 0:
+            if removeFromHand:
+                amount = 8 - len(self.hand)
+                if amount > 0:
+                    new_cards = State.deckManager.dealCards(self.deck, amount)
+                    if new_cards:
+                        for c in new_cards:
+                            self.hand.append(c)
+
+            self.cardsSelectedList = []
+            self.selected_cards = []
+            self.selected_indexes = []
+            self.selection_text = ""
             self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
             return
-        card = self.cardsSelectedList.pop(0)
-        if removeFromHand and card in self.hand:
-            self.hand.remove(card)
-            self.used.append(card)
-        if self.selected_cards:
-            self.selected_cards = self.selected_cards[1:]
+
+        if removeFromHand:
+            if sel_list is self.cardsSelectedList:
+                card = sel_list.pop()
+
+                if card in self.hand:
+                    self.hand.remove(card)
+                    self.used.append(card)
+            else:
+                idx = sel_list.pop()
+                if 0 <= idx < len(self.hand):
+                    removed = self.hand.pop(idx)
+                    self.used.append(removed)
+
+        else:
+            sel_list.pop()
+
         self.discardCards(removeFromHand)
 
 

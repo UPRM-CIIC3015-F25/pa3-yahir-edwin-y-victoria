@@ -916,43 +916,35 @@ class GameState(State):
     #   recursion finishes, reset card selections, clear any display text or tracking lists, and
     #   update the visual layout of the player's hand.
     def discardCards(self, removeFromHand: bool):
-        if len(self.cardsSelectedList) > 0:
-            sel_list = self.cardsSelectedList
-        else:
-            sel_list = self.selected_cards
-
-        if len(sel_list) == 0:
+        if not self.cardsSelectedList:
             if removeFromHand:
-                amount = 8 - len(self.hand)
-                if amount > 0:
-                    new_cards = State.deckManager.dealCards(self.deck, amount)
-                    if new_cards:
-                        for c in new_cards:
-                            self.hand.append(c)
+                max_cards_in_hand = 8
+                remaining_cards = max_cards_in_hand - len(self.hand)
+                if remaining_cards > 0 and len(self.deck) > 0:
+                    if remaining_cards > len(self.deck):
+                        remaining_cards = len(self.deck)
 
+                    if remaining_cards > 0:
+                        new_deck = State.deckManager.dealCards(
+                            self.deck,
+                            remaining_cards,
+                            self.playerInfo.levelManager.curSubLevel
+                        )
+                        self.hand += new_deck
             self.cardsSelectedList = []
-            self.selected_cards = []
-            self.selected_indexes = []
-            self.selection_text = ""
+            self.cardsSelectedRect = {}
             self.updateCards(400, 520, self.cards, self.hand, scale=1.2)
             return
-
-        if removeFromHand:
-            if sel_list is self.cardsSelectedList:
-                card = sel_list.pop()
-
-                if card in self.hand:
-                    self.hand.remove(card)
-                    self.used.append(card)
-            else:
-                idx = sel_list.pop()
-                if 0 <= idx < len(self.hand):
-                    removed = self.hand.pop(idx)
-                    self.used.append(removed)
-
-        else:
-            sel_list.pop()
-
+        selected_card = self.cardsSelectedList.pop()
+        if hasattr(selected_card, 'isSelected'):
+            selected_card.isSelected = False
+        if removeFromHand and selected_card in self.hand:
+            self.hand.remove(selected_card)
+            self.used.append(selected_card)
+        if selected_card in self.cards:
+            del self.cards[selected_card]
+        if selected_card in self.cardsSelectedRect:
+            del self.cardsSelectedRect[selected_card]
         self.discardCards(removeFromHand)
 
 

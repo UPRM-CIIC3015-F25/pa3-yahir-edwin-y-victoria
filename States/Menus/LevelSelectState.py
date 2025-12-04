@@ -103,13 +103,20 @@ class LevelSelectState(State):
                     "The Goad": (6, 1)
                 }
 
-                limits = boss_limits.get(self.currentBoss, (5, 1))
+                curSubLevel = self.playerInfo.levelManager.curSubLevel
+
+                if curSubLevel is not None:
+                    currentBoss = curSubLevel.bossLevel
+                else:
+                    currentBoss = None
+
+                limits = boss_limits.get(currentBoss, (5, 1))
                 self.playerInfo.handLimit, self.playerInfo.discardLimit = limits
                 self.playerInfo.roundScore = 0
 
                 # Set target score for the new sublevel
                 self.playerInfo.score = self.playerInfo.levelManager.curSubLevel.score
-                
+
                 # Prepare for the nextState : GameState
                 self.deckManager.resetDeck = True
                 self.isFinished = True

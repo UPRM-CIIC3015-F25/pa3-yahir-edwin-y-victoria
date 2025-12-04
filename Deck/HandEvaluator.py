@@ -9,14 +9,12 @@ from Cards.Card import Card, Rank
 #   If both a straight and a flush occur in the same suit, return "Straight Flush". Otherwise, use the rank counts
 #   and flags to determine if the hand is: "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind",
 #   "Two Pair", "One Pair", or "High Card". Return a string with the correct hand type at the end.
-def evaluate_hand(hand: list[Card]):
-    return "High Card" # If none of the above, it's High Card
 from collections import Counter
 
 RANK_TO_VALUE = {
-    "A": 14, "K": 13, "Q": 12, "J": 11,
-    "10": 10, "9": 9, "8": 8, "7": 7,
-    "6": 6, "5": 5, "4": 4, "3": 3, "2": 2
+    "ACE": 14, "KING": 13, "QUEEN": 12, "JACK": 11,
+    "TEN": 10, "NINE": 9, "EIGHT": 8, "SEVEN": 7,
+    "SIX": 6, "FIVE": 5, "FOUR": 4, "THREE": 3, "TWO": 2
 }
 
 def _values_from_hand(hand):
@@ -52,6 +50,7 @@ def evaluate_hand(hand):
     suit_counts = Counter(suits)
     counts_desc = sorted(rank_counts.values(), reverse=True)
     flush = False
+    flush_suit = None
     for suit, cnt in suit_counts.items():
         if cnt >= 5:
             flush = True
@@ -69,7 +68,7 @@ def evaluate_hand(hand):
     elif _is_consecutive(unique_vals_with_ace_low):
         straight = True
     if flush:
-        flush_vals = sorted(set(RANK_TO_VALUE[str(c.rank)] for c in hand if c.suit == flush_suit))
+        flush_vals = sorted(set(RANK_TO_VALUE[c.rank.name] for c in hand if c.suit == flush_suit))
         if 14 in flush_vals:
             fv_with_ace_low = sorted(set(flush_vals + [1]))
         else:

@@ -286,7 +286,11 @@ class PlayerInfo(State):
 
     def userInput(self, events): # Handle user input
         # Get mouse position relative to playerInfo2Surface
-        mousePos = pygame.mouse.get_pos()
+        if pygame.get_init() and pygame.display.get_surface() is not None:
+            mousePos = pygame.mouse.get_pos()
+        else:
+            mousePos = (0, 0)
+
         mousePosPlayerInfo2 = (mousePos[0] - self.playerInfo2.x, mousePos[1] - self.playerInfo2.y)
         
         # Change next state based on user input

@@ -11,47 +11,83 @@ from Cards.Card import Card, Rank
 #   "Two Pair", "One Pair", or "High Card". Return a string with the correct hand type at the end.
 from collections import Counter
 
-RANK_VALUES = {
+RANK_TO_VALUE = {
     "ACE": 14, "KING": 13, "QUEEN": 12, "JACK": 11,
     "TEN": 10, "NINE": 9, "EIGHT": 8, "SEVEN": 7,
     "SIX": 6, "FIVE": 5, "FOUR": 4, "THREE": 3, "TWO": 2
 }
 
+def _values_from_hand(hand):
+
+    vals = []
+    ranks = []
+    for c in hand:
+        r = str(c.rank)
+        ranks.append(r)
+        vals.append(RANK_TO_VALUE.get(r, None))
+    return vals, ranks
+
+def _is_consecutive(sorted_vals):
+    if len(sorted_vals) < 5:
+        return False
+    for i in range(len(sorted_vals) - 4):
+        window = sorted_vals[i:i+5]
+        ok = True
+        for j in range(4):
+            if window[j+1] - window[j] != 1:
+                ok = False
+                break
+        if ok:
+            return True
+    return False
 
 def evaluate_hand(hand):
     if not hand:
         return "High Card"
-
-    ranks = [RANK_VALUES[c.rank.name] if hasattr(c.rank, "name") else RANK_VALUES[str(c.rank).upper()] for c in hand]
+    vals, ranks = _values_from_hand(hand)
     suits = [c.suit for c in hand]
-
-    rank_count = Counter(ranks)
-    suit_count = Counter(suits)
-
-    flush = any(v >= 5 for v in suit_count.values())
-
-    vals = sorted(set(ranks))
-    if 14 in vals:
-        vals.append(1)
-    straight = any(vals[i + 4] - vals[i] == 4 for i in range(len(vals) - 4))
-
-    if flush and straight:
-        return "Straight Flush"
-    if 4 in rank_count.values():
+    rank_counts = Counter(ranks)
+    suit_counts = Counter(suits)
+    counts_desc = sorted(rank_counts.values(), reverse=True)
+    flush = False
+    flush_suit = None
+    for suit, cnt in suit_counts.items():
+        if cnt >= 5:
+            flush = True
+            flush_suit = suit
+            break
+    unique_vals = sorted(set(v for v in vals if v is not None))
+    straight = False
+    if 14 in unique_vals:
+        unique_vals_with_ace_low = unique_vals + [1]
+        unique_vals_with_ace_low = sorted(set(unique_vals_with_ace_low))
+    else:
+        unique_vals_with_ace_low = unique_vals
+    if _is_consecutive(unique_vals):
+        straight = True
+    elif _is_consecutive(unique_vals_with_ace_low):
+        straight = True
+    if flush:
+        flush_vals = sorted(set(RANK_TO_VALUE[c.rank.name] for c in hand if c.suit == flush_suit))
+        if 14 in flush_vals:
+            fv_with_ace_low = sorted(set(flush_vals + [1]))
+        else:
+            fv_with_ace_low = flush_vals
+        if _is_consecutive(flush_vals) or _is_consecutive(fv_with_ace_low):
+            return "Straight Flush"
+    if counts_desc and counts_desc[0] == 4:
         return "Four of a Kind"
-    if 3 in rank_count.values() and 2 in rank_count.values():
+    if len(counts_desc) >= 2 and counts_desc[0] == 3 and counts_desc[1] >= 2:
         return "Full House"
     if flush:
         return "Flush"
     if straight:
         return "Straight"
-    if 3 in rank_count.values():
+    if counts_desc and counts_desc[0] == 3:
         return "Three of a Kind"
-    if list(rank_count.values()).count(2) == 2:
+    if counts_desc.count(2) >= 2 or (len(counts_desc) >= 2 and counts_desc[0] == 2 and counts_desc[1] == 2):
         return "Two Pair"
-    if 2 in rank_count.values():
+    if 2 in counts_desc:
         return "One Pair"
     return "High Card"
-
-
 

@@ -17,6 +17,18 @@ RANK_TO_VALUE = {
     "SIX": 6, "FIVE": 5, "FOUR": 4, "THREE": 3, "TWO": 2
 }
 
+HAND_MULTIPLIER = {
+    "High Card": 1,
+    "One Pair": 2,
+    "Two Pair": 3,
+    "Three of a Kind": 4,
+    "Straight": 5,
+    "Flush": 6,
+    "Full House": 8,
+    "Four of a Kind": 10,
+    "Straight Flush": 12
+}
+
 def _values_from_hand(hand):
     vals, ranks = [], []
     for c in hand:
@@ -30,14 +42,10 @@ def _values_from_hand(hand):
 def _is_consecutive(vals):
     if len(vals) < 5:
         return False
+    vals = sorted(vals)
     for i in range(len(vals) - 4):
-        ok = True
-        w = vals[i:i+5]
-        for j in range(4):
-            if w[j+1] - w[j] != 1:
-                ok = False
-                break
-        if ok:
+        window = vals[i:i+5]
+        if all(window[j+1] - window[j] == 1 for j in range(4)):
             return True
     return False
 
@@ -70,18 +78,27 @@ def evaluate_hand(hand):
         if _is_consecutive(fv) or _is_consecutive(fv_low):
             return "Straight Flush"
 
-    if counts and counts[0] == 4:
+    if counts[0] == 4:
         return "Four of a Kind"
-    if len(counts) > 1 and counts[0] == 3 and counts[1] >= 2:
-        return "Full House"
+    if counts[0] == 3:
+        if len(counts) > 1 and counts[1] >= 2:
+            return "Full House"
+        return "Three of a Kind"
+
+    pairs = [v for v in counts if v == 2]
+    if len(pairs) >= 2:
+        return "Two Pair"
+    if len(pairs) == 1:
+        return "One Pair"
+
     if flush_suit:
         return "Flush"
     if straight:
         return "Straight"
-    if counts and counts[0] == 3:
-        return "Three of a Kind"
-    if counts.count(2) >= 2:
-        return "Two Pair"
-    if 2 in counts:
-        return "One Pair"
+
     return "High Card"
+
+def hand_value(hand):
+    """Devuelve el multiplicador basado en la mano evaluada"""
+    hand_name = evaluate_hand(hand)
+    return HAND_MULTIPLIER.get(hand_name, 1)

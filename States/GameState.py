@@ -530,16 +530,6 @@ class GameState(State):
                         self.deselect_sfx.play()
                     return  # Stop after interacting with one card
 
-    # TODO (TASK 7) - Rewrite this function so that it calculates the player's gold reward *recursively*.
-    #   The recursion should progress through each step of the reward process (base reward, bonus for overkill, etc.)
-    #   by calling itself with updated parameters or stages instead of using loops.
-    #   Each recursive call should handle a single part of the reward logic, and the final base case should
-    #   return the total combined reward once all calculations are complete.
-    #   The function must include:
-    #     - Base gold depending on blind type (SMALL=4, BIG=8, BOSS=10)
-    #     - Recursive calculation of the overkill bonus (based on how much score exceeds the target)
-    #     - A clear base case to stop recursion when all parts are done
-    #   Avoid any for/while loops — recursion alone must handle the repetition.
 
     def calculate_gold_reward(self, playerInfo, stage=None):
         if stage is None:
@@ -841,9 +831,9 @@ class GameState(State):
                 self.activated_jokers.add("Michael Myers")
 
             if "Fibonacci" in self.owned_jokers:
-                for card in self.hand:
-                    if str(card.rank) in ["A", "2", "3", "5", "8"]:
-                        self.current_multiplier += 8
+                fib_ranks = ["A", "2", "3", "5", "8"]
+                count = sum(1 for card in self.hand if str(card.rank) in fib_ranks)
+                self.current_multiplier += 8 * count
                 self.activated_jokers.add("Fibonacci")
 
             if "Gauntlet" in self.owned_jokers:
@@ -870,45 +860,15 @@ class GameState(State):
                 self.activated_jokers.add("? Block")
 
             if "Hogwarts" in self.owned_jokers:
-                for card in self.hand:
-                    if str(card.rank) == "A":
-                        self.current_multiplier += 4
-                        self.chips += 20
+                ace_count = sum(1 for card in self.hand if str(card.rank) == "A")
+                self.current_multiplier += 4 * ace_count
+                self.chips += 20 * ace_count
                 self.activated_jokers.add("Hogwarts")
 
             if "802" in self.owned_jokers:
                 if self.amountOfHands == 0:
                     self.chips *= 2
                 self.activated_jokers.add("802")
-
-        procrastinate = False
-
-        # commit modified player multiplier and chips
-        self.playerInfo.playerMultiplier = hand_mult
-        self.playerInfo.playerChips = total_chips
-        self.playerInfo.curHandOfPlayer = hand_name
-        self.playerInfo.curHandText = self.playerInfo.textFont1.render(self.playerInfo.curHandOfPlayer, False, 'white')
-
-        # compute amount that will be added to round when timer expires
-        added_to_round = total_chips * hand_mult
-        # Procrastination doubles the final hand's addition
-        if 'procrastinate' in locals() and procrastinate:
-            added_to_round *= 2
-        self.pending_round_add = added_to_round  # defer actual addition until timer ends
-
-        # prepare on-screen feedback
-        self.playedHandTextSurface = self.playerInfo.textFont1.render(hand_name, True, 'yellow')
-        score_breakdown_text = f"(Hand: {hand_chips} + Cards: {card_chips_sum}) Chips | x{hand_mult} Mult -> +{added_to_round}"
-        self.scoreBreakdownTextSurface = self.playerInfo.textFont2.render(score_breakdown_text, True, 'white')
-
-        self.playHandStartTime = pygame.time.get_ticks()
-        self.playHandActive = True
-        self.cardsSelectedRect.clear()
-
-        start_x, start_y, spacing = 20, 20, 95
-        for i, card in enumerate(self.cardsSelectedList):
-            w, h = card.scaled_image.get_width(), card.scaled_image.get_height()
-            self.cardsSelectedRect[card] = pygame.Rect(start_x + i * spacing, start_y, w, h)
 
     # TODO (TASK 4) - The function should remove one selected card from the player's hand at a time, calling itself
     #   again after each removal until no selected cards remain (base case). Once all cards have been

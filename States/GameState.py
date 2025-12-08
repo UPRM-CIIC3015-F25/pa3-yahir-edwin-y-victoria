@@ -870,6 +870,35 @@ class GameState(State):
                     self.chips *= 2
                 self.activated_jokers.add("802")
 
+        procrastinate = False
+
+        # commit modified player multiplier and chips
+        self.playerInfo.playerMultiplier = hand_mult
+        self.playerInfo.playerChips = total_chips
+        self.playerInfo.curHandOfPlayer = hand_name
+        self.playerInfo.curHandText = self.playerInfo.textFont1.render(self.playerInfo.curHandOfPlayer, False, 'white')
+
+        # compute amount that will be added to round when timer expires
+        added_to_round = total_chips * hand_mult
+        # Procrastination doubles the final hand's addition
+        if 'procrastinate' in locals() and procrastinate:
+            added_to_round *= 2
+        self.pending_round_add = added_to_round  # defer actual addition until timer ends
+
+        # prepare on-screen feedback
+        self.playedHandTextSurface = self.playerInfo.textFont1.render(hand_name, True, 'yellow')
+        score_breakdown_text = f"(Hand: {hand_chips} + Cards: {card_chips_sum}) Chips | x{hand_mult} Mult -> +{added_to_round}"
+        self.scoreBreakdownTextSurface = self.playerInfo.textFont2.render(score_breakdown_text, True, 'white')
+
+        self.playHandStartTime = pygame.time.get_ticks()
+        self.playHandActive = True
+        self.cardsSelectedRect.clear()
+
+        start_x, start_y, spacing = 20, 20, 95
+        for i, card in enumerate(self.cardsSelectedList):
+            w, h = card.scaled_image.get_width(), card.scaled_image.get_height()
+            self.cardsSelectedRect[card] = pygame.Rect(start_x + i * spacing, start_y, w, h)
+
     # TODO (TASK 4) - The function should remove one selected card from the player's hand at a time, calling itself
     #   again after each removal until no selected cards remain (base case). Once all cards have been
     #   discarded, draw new cards to refill the hand back to 8 cards. Use helper functions but AVOID using

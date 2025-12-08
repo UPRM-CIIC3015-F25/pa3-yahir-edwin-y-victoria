@@ -18,23 +18,23 @@ RANK_TO_VALUE = {
 }
 
 def _values_from_hand(hand):
-
-    vals = []
-    ranks = []
+    vals, ranks = [], []
     for c in hand:
-        r = str(c.rank)
-        ranks.append(r)
-        vals.append(RANK_TO_VALUE.get(r, None))
+        name = c.rank.name if hasattr(c.rank, "name") else str(c.rank).upper()
+        ranks.append(name)
+        v = RANK_TO_VALUE.get(name)
+        if v is not None:
+            vals.append(v)
     return vals, ranks
 
-def _is_consecutive(sorted_vals):
-    if len(sorted_vals) < 5:
+def _is_consecutive(vals):
+    if len(vals) < 5:
         return False
-    for i in range(len(sorted_vals) - 4):
-        window = sorted_vals[i:i+5]
+    for i in range(len(vals) - 4):
         ok = True
+        w = vals[i:i+5]
         for j in range(4):
-            if window[j+1] - window[j] != 1:
+            if w[j+1] - w[j] != 1:
                 ok = False
                 break
         if ok:
@@ -44,50 +44,44 @@ def _is_consecutive(sorted_vals):
 def evaluate_hand(hand):
     if not hand:
         return "High Card"
+
     vals, ranks = _values_from_hand(hand)
     suits = [c.suit for c in hand]
     rank_counts = Counter(ranks)
     suit_counts = Counter(suits)
-    counts_desc = sorted(rank_counts.values(), reverse=True)
-    flush = False
+    counts = sorted(rank_counts.values(), reverse=True)
+
     flush_suit = None
-    for suit, cnt in suit_counts.items():
-        if cnt >= 5:
-            flush = True
-            flush_suit = suit
+    for s, c in suit_counts.items():
+        if c >= 5:
+            flush_suit = s
             break
-    unique_vals = sorted(set(v for v in vals if v is not None))
-    straight = False
-    if 14 in unique_vals:
-        unique_vals_with_ace_low = unique_vals + [1]
-        unique_vals_with_ace_low = sorted(set(unique_vals_with_ace_low))
-    else:
-        unique_vals_with_ace_low = unique_vals
-    if _is_consecutive(unique_vals):
-        straight = True
-    elif _is_consecutive(unique_vals_with_ace_low):
-        straight = True
-    if flush:
-        flush_vals = sorted(set(RANK_TO_VALUE[c.rank.name] for c in hand if c.suit == flush_suit))
-        if 14 in flush_vals:
-            fv_with_ace_low = sorted(set(flush_vals + [1]))
-        else:
-            fv_with_ace_low = flush_vals
-        if _is_consecutive(flush_vals) or _is_consecutive(fv_with_ace_low):
+
+    uvals = sorted(set(vals))
+    low_ace = sorted(set(uvals + [1])) if 14 in uvals else uvals
+    straight = _is_consecutive(uvals) or _is_consecutive(low_ace)
+
+    if flush_suit:
+        fv = sorted(set(
+            RANK_TO_VALUE[c.rank.name] if hasattr(c.rank, "name") else RANK_TO_VALUE.get(str(c.rank).upper())
+            for c in hand if c.suit == flush_suit
+        ))
+        fv_low = sorted(set(fv + [1])) if 14 in fv else fv
+        if _is_consecutive(fv) or _is_consecutive(fv_low):
             return "Straight Flush"
-    if counts_desc and counts_desc[0] == 4:
+
+    if counts and counts[0] == 4:
         return "Four of a Kind"
-    if len(counts_desc) >= 2 and counts_desc[0] == 3 and counts_desc[1] >= 2:
+    if len(counts) > 1 and counts[0] == 3 and counts[1] >= 2:
         return "Full House"
-    if flush:
+    if flush_suit:
         return "Flush"
     if straight:
         return "Straight"
-    if counts_desc and counts_desc[0] == 3:
+    if counts and counts[0] == 3:
         return "Three of a Kind"
-    if counts_desc.count(2) >= 2 or (len(counts_desc) >= 2 and counts_desc[0] == 2 and counts_desc[1] == 2):
+    if counts.count(2) >= 2:
         return "Two Pair"
-    if 2 in counts_desc:
+    if 2 in counts:
         return "One Pair"
     return "High Card"
-

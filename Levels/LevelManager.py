@@ -41,7 +41,7 @@ class LevelManager():
     
     def update(self):
         if self.curSubLevel and not self.curSubLevel.finished:  # Check if current sublevel is finished
-            #if self.p.roundScore >= self.curSubLevel.score:     # If player's round score meets or exceeds sublevel score requirement
+            if self.p.roundScore >= self.curSubLevel.score:  # If player's round score meets or exceeds sublevel score requirement
                 self.curSubLevel.finished = True
                 if self.next_unfinished_sublevel() is None:  # Check if all sublevels in the current ante are finished
                     self.p.playerAnte += 1
